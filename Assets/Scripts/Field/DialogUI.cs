@@ -79,7 +79,7 @@ public class DialogUI : MonoBehaviour
         //boolの値を直接GameObjectのActiveの値に変更する
         YesNoButtonBG.SetActive(dialogDate.ShowYesNo);
         GameState.IsDialogOpen = true;
-        Nametext.text = name;
+        Nametext.text = dialogDate.Speaker;
 
         currentLines = dialogDate.MessageLines;
         lineIndex = 0;
@@ -151,13 +151,13 @@ public class DialogUI : MonoBehaviour
         
         }
 
-
-
     }
 
     private void ShowLine(int index) 
     
     {
+        StopTypingIfNeeded();
+
         //今表示されているものを空にする
     Messagetext.text = string.Empty;
     if(NextHint !=null)
@@ -212,8 +212,7 @@ public class DialogUI : MonoBehaviour
             NextHint.SetActive(true);
         
         }
-
-    
+            
     }
 
     private void StopTypingIfNeeded()
@@ -233,8 +232,6 @@ public class DialogUI : MonoBehaviour
     public void OnNo()
     {
         Close();
-
-
 
     }
 
