@@ -91,14 +91,6 @@ public class DialogUI : MonoBehaviour
     }
 
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-
     /// <summary>
     /// UI‚Ìclose‚©‚çŒÄ‚Ño‚µ
     /// </summary>

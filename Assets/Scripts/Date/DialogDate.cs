@@ -27,6 +27,6 @@ public class DialogDate:ScriptableObject
     /// <summary>
     /// イエスを押した時のゲーム進攻上のフラグ
     /// </summary>
-    public int SetFlagOnYes;
+    public string SetFlagOnYes;
 
 }
