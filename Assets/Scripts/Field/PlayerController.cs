@@ -45,6 +45,15 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     void Update()
     {
+
+        //もしダイアログがオープンしてたら何もしない
+        if (GameState.IsDialogOpen)
+        {
+            return;
+
+        }
+
+
         Move();
         ApplyGravity();
 
