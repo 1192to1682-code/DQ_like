@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName ="DQ-Like/Dialog/DiakogDate",
+[CreateAssetMenu(menuName ="DQ-Like/Dialog/DialogDate",
     fileName = "DialogDate_")
     
     ]

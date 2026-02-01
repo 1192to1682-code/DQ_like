@@ -47,7 +47,24 @@ public class Interactor : MonoBehaviour
         }
 
 
+   
+
     }
 
-       
+    public void OnMessageNext(InputValue value)
+    {
+
+        if (!value.isPressed)
+        {
+            return;
+
+        }
+
+        if (GameState.IsDialogOpen)
+        {
+            DialogUI.Instance.Next();
+
+        }
+
+    }
 }

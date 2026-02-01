@@ -19,6 +19,8 @@ public class DialogUI : MonoBehaviour
     [Header("▼などのNextHint(Optional)")]
     public GameObject NextHint;
 
+    public GameObject YesNoButtonBG;
+
 
     /// <summary>
     /// 1文字を待つ時間
@@ -71,8 +73,11 @@ public class DialogUI : MonoBehaviour
             Debug.LogWarning("DialogDateが不正です");
             return;
         
-        } 
+        }
 
+
+        //boolの値を直接GameObjectのActiveの値に変更する
+        YesNoButtonBG.SetActive(dialogDate.ShowYesNo);
         GameState.IsDialogOpen = true;
         Nametext.text = name;
 
@@ -100,6 +105,7 @@ public class DialogUI : MonoBehaviour
 
     public void Close()
     {
+        StopTypingIfNeeded  ();
         GameState.IsDialogOpen = false;
         Panel.SetActive(false);
 
@@ -184,7 +190,7 @@ public class DialogUI : MonoBehaviour
         
         }
 
-        Next();
+        //Next();
         typingCoroutine = null;
     }
 
@@ -196,6 +202,7 @@ public class DialogUI : MonoBehaviour
             return;
         }
 
+        StopTypingIfNeeded ();
         Messagetext.text = currentLines[lineIndex];
 
         isTyping = false;
@@ -209,6 +216,15 @@ public class DialogUI : MonoBehaviour
     
     }
 
+    private void StopTypingIfNeeded()
+    {
+        if (typingCoroutine != null)
+        { StopCoroutine(typingCoroutine);
+
+            isTyping = false;
+        }
+
+            }
     public void OnYes()
     {
         Close();
@@ -217,10 +233,9 @@ public class DialogUI : MonoBehaviour
     public void OnNo()
     {
         Close();
-            
-        
+
+
 
     }
-
 
 }
