@@ -4,6 +4,8 @@ public class NPCInteract : MonoBehaviour,IInteractable
 {
     public DialogDate FirstDialogDate;
     public DialogDate AfterDialogDate;
+    public DialogDate HasKeyDialogDate;
+
     /// <summary>
     /// 外からユニティーのイベント処理をする
     /// </summary>
@@ -11,7 +13,14 @@ public class NPCInteract : MonoBehaviour,IInteractable
 
     public void Interact()
     {
-        if (!QuestFlag.TalkedToVillager)
+        if (QuestFlag.HasKey)
+        {
+            DialogUI.Instance.Show(HasKeyDialogDate);
+
+        }
+
+        else if (!QuestFlag.TalkedToVillager)
+
         {
 
             DialogUI.Instance.Show(FirstDialogDate);
@@ -23,6 +32,11 @@ public class NPCInteract : MonoBehaviour,IInteractable
         {
             DialogUI.Instance.Show(AfterDialogDate);
 
+        }
+
+        if (!QuestFlag.HasKey)
+        {
+            return;
         }
 
  

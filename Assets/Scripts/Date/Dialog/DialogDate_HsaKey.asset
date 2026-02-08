@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6885c05a0b2e2984ab9dd247913b13ac, type: 3}
-  m_Name: DialogDate_0
+  m_Name: DialogDate_HsaKey
   m_EditorClassIdentifier: 
   Speaker: "\u6751\u4EBAA"
   MessageLines:
-  - "\u3053\u3093\u306B\u3061\u306F"
-  - "\u4ECA\u65E5\u3082\u3044\u3044\u5929\u6C17\u3067\u3059\u306D"
-  ShowYesNo: 0
-  SetFlagOnYes: 0
+  - "\u305D\u3046\u3044\u3048\u3070\u3042\u306A\u305F\u306F\u9375\u3092\u3082\u3063\u3066\u3044\u307E\u3059\u306D"
+  - "\u9580\u3092\u958B\u3051\u3066\u7F6E\u304D\u307E\u3059\u306D"
+  ShowYesNo: 1
+  SetFlagOnYes: 

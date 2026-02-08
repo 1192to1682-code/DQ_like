@@ -45,9 +45,7 @@ public class Interactor : MonoBehaviour
 
             interactable?.Interact();
         }
-
-
-   
+          
 
     }
 

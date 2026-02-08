@@ -92,6 +92,40 @@ public class DialogUI : MonoBehaviour
 
 
     /// <summary>
+    /// 外部からアイテム取得のダイアログを見せる
+    /// </summary>
+    /// <param name="dialogDate"></param>
+    public void ShowItemDialog(string dialogMessage)
+    {
+
+        if (dialogMessage == string.Empty)
+        {
+            Debug.LogWarning("DialogMessageがないです");
+            return;
+
+        }
+
+
+        //boolの値を直接GameObjectのActiveの値に変更する
+        YesNoButtonBG.SetActive(false);
+        GameState.IsDialogOpen = true;
+        Nametext.text = string.Empty;
+
+        string[] itemLines = new string[1];
+        itemLines[0] =$"{dialogMessage}を手に入れた";
+
+        currentLines =itemLines;
+        lineIndex = 0;
+
+
+        Panel.SetActive(true);
+
+        ShowLine(lineIndex);
+
+    }
+
+
+    /// <summary>
     /// UIのcloseから呼び出し
     /// </summary>
 
@@ -205,6 +239,33 @@ public class DialogUI : MonoBehaviour
         
         }
             
+    }
+
+    public void ShowSimpleMessage(string message)
+    {
+        if (message== string.Empty)
+        {
+            Debug.LogWarning("messageが未取得です");
+            return;
+        }
+
+        StopTypingIfNeeded();
+
+        // Yes / No は表示しない
+        YesNoButtonBG.SetActive(false);
+
+        GameState.IsDialogOpen = true;
+
+        // 名前欄は空
+        Nametext.text = string.Empty;
+
+        // 1行だけの配列として扱う
+        currentLines = new string[] { message };
+        lineIndex = 0;
+
+        Panel.SetActive(true);
+
+        ShowLine(lineIndex);
     }
 
     private void StopTypingIfNeeded()
