@@ -12,7 +12,15 @@ public class NPCInteract : MonoBehaviour,IInteractable
     public UnityEvent NPCEvent;
 
     public void Interact()
-    {
+     {
+        if (DialogUI.Instance != null &&
+            DialogUI.Instance.TryNextIfOpen())
+        {
+            return;
+        
+        }
+
+
         if (QuestFlag.HasKey)
         {
             DialogUI.Instance.Show(HasKeyDialogDate);

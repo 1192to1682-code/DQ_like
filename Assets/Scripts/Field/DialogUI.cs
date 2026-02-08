@@ -288,4 +288,16 @@ public class DialogUI : MonoBehaviour
 
     }
 
+    public bool TryNextIfOpen()
+    {
+        if (!Panel.activeSelf)
+        {
+            return false;
+        }
+        Next();
+            return true;
+       
+    
+    }
+
 }
