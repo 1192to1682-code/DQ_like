@@ -3,10 +3,11 @@ using UnityEngine;
 public class SignInteract : MonoBehaviour,IInteractable
 {
     [TextArea]
-    public string Message = "‚±‚±‚Í@‚Í‚¶‚Ü‚è‚Ì@‚Ş‚ç@‚Å‚·";
+    public string Message = "ã“ã“ã¯ã€€ã¯ã˜ã¾ã‚Šã®ã€€ã‚€ã‚‰ã€€ã§ã™";
     public void Interact()
     {
-        Debug. Log($"[Sign]{Message}");
+        //Debug. Log($"[Sign]{Message}");
+        DialogUI.Instance.ShowSimpleMessage(Message);
     }
     
 

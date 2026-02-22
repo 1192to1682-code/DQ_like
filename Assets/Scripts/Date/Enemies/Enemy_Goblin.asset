@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8571b5d5686c36449b53884cdfba97fb, type: 3}
   m_Name: Enemy_Goblin
   m_EditorClassIdentifier: 
-  EnemyID: 0
+  EnemyID: 1
   DisplayName: "\u30B4\u30D6\u30EA\u30F3"
   MaxHP: 30
-  AttackMIn: 5
+  AttackMin: 0
   AttackMax: 10
+  ModelPrefab: {fileID: 0}
+  ModelPosition: {x: 0, y: 0, z: 2}
+  ModelRotation: {x: 0, y: 180, z: 0}
+  ModelScale: {x: 1, y: 1, z: 1}
+  ExReward: 5
   Description: 
