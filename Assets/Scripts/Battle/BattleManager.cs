@@ -612,7 +612,7 @@ public class BattleManager : MonoBehaviour
         if(currentEnemy !!=null)
         {
 
-            exp = currentEnemy.ExReward;
+            exp = currentEnemy.ExpReward;
 
         }
 

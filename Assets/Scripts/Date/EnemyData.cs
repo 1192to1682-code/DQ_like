@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyData :ScriptableObject
 {
     public int EnemyID;//識別用(0,1,2)
-        public string DisplayName;//敵の表示名
+    public string DisplayName;//敵の表示名
     public float MaxHP;//最大体力
     public float AttackMin;//最小攻撃力
     public float AttackMax;//最大攻撃力
@@ -16,7 +16,7 @@ public class EnemyData :ScriptableObject
     public Vector3 ModelScale = Vector3.one;
 
     [Header("Reward")]
-    public int ExReward = 5;//経験値
+    public int ExpReward = 5;//経験値
 
 
 

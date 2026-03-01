@@ -1473,7 +1473,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1106133229}
   - component: {fileID: 1106133228}
-  - component: {fileID: 1106133227}
   m_Layer: 0
   m_Name: LevelSystem
   m_TagString: Untagged
@@ -1481,23 +1480,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1106133227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1106133226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71b1bbad3c1e102489285b36e21c045f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Status: {fileID: 11400000, guid: 586f3c1486993854ab19920d9efbb926, type: 2}
-  ExpTable: {fileID: 11400000, guid: 03db0575c9f7290459c51fe1fd9bbbbe, type: 2}
-  HpUpPerLevel: 5
-  AttackMinUpPerLevel: 1
-  AttackMaxUpPerLevel: 1
 --- !u!114 &1106133228
 MonoBehaviour:
   m_ObjectHideFlags: 0
