@@ -21,5 +21,5 @@ MonoBehaviour:
   ModelPosition: {x: 0, y: 0, z: 2}
   ModelRotation: {x: 0, y: 180, z: 0}
   ModelScale: {x: 100, y: 100, z: 100}
-  ExReward: 5
+  ExReward: 10
   Description: 

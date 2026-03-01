@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ba8dc9f4f013c5488d5d6193f21c370, type: 3}
+  m_Name: PlayerStatus_Main
+  m_EditorClassIdentifier: 
+  Level: 1
+  Exp: 0
+  MaxHP: 30
+  AttackMin: 3
+  AttackMax: 6

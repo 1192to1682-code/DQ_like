@@ -1,0 +1,145 @@
+﻿
+          yield return new WaitForSeconds(1f);
+  
+          var damage =
+              Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax));
+  
+>         EnemyHP -= damage;
+  
+          DialogText.text = $"{damage}繝繝｡繝ｼ繧ｸ!";
+  
+          UpdateUI();
+  
+          yield return new WaitForSeconds(1f);
+  
+          if (EnemyHP <= 0f)//菴灘鴨繧貞炎繧雁・繧後◆繧・
+          {
+  
+>             Victory();
+          }
+  
+          else//縺昴≧縺倥ｃ縺ｪ縺九▲縺溘ｉ
+          {
+>             StartCoroutine(EnemyTurn());
+  
+          }
+  
+      }
+          private System.Collections.IEnumerator ExecuteGurad()
+  
+  
+          isGuarding = true;
+          DialogText.text = "霄ｫ繧貞ｮ医▲縺ｦ縺・ｋ!";
+          yield return new WaitForSeconds(1f);
+>         StartCoroutine(EnemyTurn());
+  
+  
+  
+      }
+  
+  
+              DialogText.text = "縺ｾ繧上ｊ縺薙∪繧後◆";
+              isPlayerTurn = false;
+              SetMenuState(BattleMenuState.Busy);
+              yield return new WaitForSeconds(0.8f);
+>             StartCoroutine(EnemyTurn());
+  
+          }
+  
+      }
+  
+          //
+          PlayerHP = Mathf.Min(PlayerMaxHP, PlayerHP + heal);
+          DialogText.text = $"{heal}縺九＞縺ｵ縺・;
+          UpdateUI();
+          yield return new WaitForSeconds(0.8f);
+>         StartCoroutine(EnemyTurn());
+      }
+  
+  
+      private System.Collections.IEnumerator ExecutePowerSkill()
+      {
+          yield return new WaitForSeconds(0.6f);
+  
+          var damage =
+             Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax)*1.6f +2);
+  
+>         EnemyHP -= damage;
+  
+          DialogText.text = $"{damage}繝繝｡繝ｼ繧ｸ!";
+  
+          UpdateUI();
+  
+          yield return new WaitForSeconds(0.8f);
+  
+          if (EnemyHP <= 0f)//菴灘鴨繧貞炎繧雁・繧後◆繧・
+          {
+  
+>             Victory();
+          }
+  
+          else//縺昴≧縺倥ｃ縺ｪ縺九▲縺溘ｉ
+          {
+>             StartCoroutine(EnemyTurn());
+  
+          }
+  
+  
+  
+          yield return new WaitForSeconds(1f);
+  
+          var damage =
+              Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax));
+  
+>         EnemyHP -= damage;
+  
+          DialogText.text = $"{damage}繝繝｡繝ｼ繧ｸ!";
+  
+          UpdateUI();
+  
+          yield return new WaitForSeconds(1f);
+  
+          if (EnemyHP <= 0f)//菴灘鴨繧貞炎繧雁・繧後◆繧・
+          {
+  
+>             Victory();
+          }
+  
+          else//縺昴≧縺倥ｃ縺ｪ縺九▲縺溘ｉ
+          {
+>             StartCoroutine(EnemyTurn());
+  
+          }
+  
+      }
+  
+>     private System.Collections.IEnumerator EnemyTurn()
+      {
+          DialogText.text = $"{currentEnemy.DisplayName}縺ｮ謾ｻ謦・";
+          yield return new WaitForSeconds(1f);
+  
+          var damage =
+              damage = Mathf.Ceil(damage * 0.5f);
+              isGuarding = false;
+  
+          }
+  
+>         PlayerHP -= damage;
+  
+  
+  
+          DialogText.text = $"{damage}繝繝｡繝ｼ繧ｸ!";
+  
+              EnemyHPText.text = $"HP:{EnemyHP}";
+  
+          }
+      }
+  
+>     private void Victory()
+      {
+          DialogText.text = "蜍晏茜";
+          Invoke(nameof(ReturnToField), 2f);
+      }
+  
+
+

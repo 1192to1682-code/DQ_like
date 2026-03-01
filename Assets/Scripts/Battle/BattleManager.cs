@@ -5,9 +5,9 @@ using TMPro;
 public enum BattleMenuState
 {
 
-    Root, //‚½‚½‚©‚¤/‚³‚­‚¹‚ñ/‚É‚°‚é
-    Fight,//‚±‚¤‚°‚«/‚¶‚ã‚à‚ñ//‚Æ‚­‚¬/–hŒä
-    Busy//‰‰o’†(“ü—Í•s‰Â)
+    Root, //ãŸãŸã‹ã†/ã•ãã›ã‚“/ã«ã’ã‚‹
+    Fight,//ã“ã†ã’ã/ã˜ã‚…ã‚‚ã‚“//ã¨ãã/é˜²å¾¡
+    Busy//æ¼”å‡ºä¸­(å…¥åŠ›ä¸å¯)
 
 }
 
@@ -22,13 +22,19 @@ public class BattleManager : MonoBehaviour
     [Header("Enemy Visual")]
     public Transform EnemyModelRoot;
     private GameObject enemyModelInstance;
+    private Animator enemyAnimator;
 
+
+    [Header("PlayerStatus ã¨LevelSystemã®å‚ç…§")]
+    public PlayerStatus PlayerStatus;
+    public LevelSystem LevelSystem;
 
     [Header("PlayerData")]
     public float PlayerMaxHP = 30f;
     public float PlayerHP = 30;
     public float PlayerAttackMin = 5;
     public float PlayerAttackMax = 10;
+
 
     [Header("Enemy HP")]
     public float EnemyHP;
@@ -60,15 +66,33 @@ public class BattleManager : MonoBehaviour
     {
 
         SetupEnemyFromDB();
+        ApplyPlayerStatus();
+
         UpdateUI();
 
         BuildRootMenu();
 
         SpawnEnemyModel();
 
-        DialogText.text = $"{currentEnemy.DisplayName}‚ªŒ»‚ê‚½!";
+        DialogText.text = $"{currentEnemy.DisplayName}ãŒç¾ã‚ŒãŸ!";
 
     }
+
+
+    private void ApplyPlayerStatus()
+    {
+
+        if(PlayerStatus ==null)
+        {
+            return;
+
+        }
+        PlayerMaxHP = PlayerStatus.MaxHP;
+        PlayerHP =Mathf.Min(PlayerHP, PlayerMaxHP);
+        PlayerAttackMin = PlayerStatus.AttackMin;
+        PlayerAttackMax = PlayerStatus.AttackMax;
+    }
+
 
     private void SetupEnemyFromDB()
     {
@@ -76,7 +100,7 @@ public class BattleManager : MonoBehaviour
         if (EnemyDB == null)
         {
 
-            Debug.LogError("EnemyDB‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+            Debug.LogError("EnemyDBãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“");
             return;
 
         }
@@ -85,7 +109,7 @@ public class BattleManager : MonoBehaviour
 
         if (currentEnemy == null)
         {
-            Debug.LogError("NextEnemyID‚ªEnemyDB‚ÉŒ©‚Â‚©‚è‚Ü‚¹‚ñ");
+            Debug.LogError("NextEnemyIDãŒEnemyDBã«è¦‹ã¤ã‹ã‚Šã¾ã›ã‚“");
             return;
 
         }
@@ -134,7 +158,7 @@ public class BattleManager : MonoBehaviour
     {
 
         ClearChildren(RootMenuRoot);
-        CreateButton(RootMenuRoot, "‚½‚½‚©‚¤", () => {
+        CreateButton(RootMenuRoot, "ãŸãŸã‹ã†", () => {
         
         if(!isPlayerTurn)
 
@@ -142,25 +166,25 @@ public class BattleManager : MonoBehaviour
                 return;
             }
 
-            //‚½‚½‚©‚¤ƒƒjƒ…[‚ğİ’è‚µ‚Ü‚·
-            //Todo:‚±‚±‚É‚ ‚Æ‚Åİ’è—p‚Ìƒƒ\ƒbƒh‚ğ’Ç‹L‚·‚é
+            //ãŸãŸã‹ã†ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¨­å®šã—ã¾ã™
+            //Todo:ã“ã“ã«ã‚ã¨ã§è¨­å®šç”¨ã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¿½è¨˜ã™ã‚‹
             BuildFightMenu();
             SetMenuState(BattleMenuState.Fight);
-            DialogText.text = "‚Ç‚¤‚·‚éH";
+            DialogText.text = "ã©ã†ã™ã‚‹ï¼Ÿ";
         });
 
-        CreateButton(RootMenuRoot, "‚³‚­‚¹‚ñ", () =>
+        CreateButton(RootMenuRoot, "ã•ãã›ã‚“", () =>
         {
             if(!isPlayerTurn)
             {
                 return;
 
             }
-            DialogText.text = "‚³‚­‚¹‚ñ‚Í‚Ü‚¾‚Â‚©‚¦‚È‚¢!";
+            DialogText.text = "ã•ãã›ã‚“ã¯ã¾ã ã¤ã‹ãˆãªã„!";
 
         });
 
-        CreateButton(RootMenuRoot, "‚É‚°‚é", () =>
+        CreateButton(RootMenuRoot, "ã«ã’ã‚‹", () =>
         {
 
             if (!isPlayerTurn)
@@ -170,7 +194,7 @@ public class BattleManager : MonoBehaviour
             }
 
             StartCoroutine (TryEscape());
-            //TodoF“¦‚°‚é‚ğg‚¤
+            //Todoï¼šé€ƒã’ã‚‹ã‚’ä½¿ã†
 
         });
 
@@ -180,7 +204,7 @@ public class BattleManager : MonoBehaviour
     {
 
         ClearChildren(FightMenuRoot);
-        CreateButton(FightMenuRoot, "‚±‚¤‚°‚«", () =>
+        CreateButton(FightMenuRoot, "ã“ã†ã’ã", () =>
         {
 
             if (!isPlayerTurn)
@@ -193,7 +217,7 @@ public class BattleManager : MonoBehaviour
 
         });
 
-    CreateButton(FightMenuRoot, "‚¶‚ã‚à‚ñ", () =>
+    CreateButton(FightMenuRoot, "ã˜ã‚…ã‚‚ã‚“", () =>
         {
 
             if (!isPlayerTurn)
@@ -206,7 +230,7 @@ public class BattleManager : MonoBehaviour
 
         });//Todo
 
-        CreateButton(FightMenuRoot, "‚Æ‚­‚¬", () =>
+        CreateButton(FightMenuRoot, "ã¨ãã", () =>
         {
 
             if (!isPlayerTurn)
@@ -219,7 +243,7 @@ public class BattleManager : MonoBehaviour
 
         });//Todo
 
-        CreateButton(FightMenuRoot, "‚Ú‚¤‚¬‚å", () =>
+        CreateButton(FightMenuRoot, "ã¼ã†ãã‚‡", () =>
         {
 
             if (!isPlayerTurn)
@@ -232,10 +256,10 @@ public class BattleManager : MonoBehaviour
 
         });//Todo
 
-        CreateButton(FightMenuRoot, "‚à‚Ç‚é", () =>
+        CreateButton(FightMenuRoot, "ã‚‚ã©ã‚‹", () =>
         {
             SetMenuState(BattleMenuState.Root);
-            DialogText.text = "‚Ç‚¤‚·‚é";
+            DialogText.text = "ã©ã†ã™ã‚‹";
                                   
 
         });
@@ -249,7 +273,7 @@ public class BattleManager : MonoBehaviour
         SetMenuState(BattleMenuState.Busy);
 
 
-        DialogText.text = "ƒvƒŒƒCƒ„[‚ÌUŒ‚!";
+        DialogText.text = "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ”»æ’ƒ!";
         yield return new WaitForSeconds(1f);
 
         var damage =
@@ -257,19 +281,25 @@ public class BattleManager : MonoBehaviour
 
         EnemyHP -= damage;
 
-        DialogText.text = $"{damage}ƒ_ƒ[ƒW!";
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetTrigger("Damage");
+            StartCoroutine(FlashColor(Color.red, 0.2f));
+        }
+
+        DialogText.text = $"{damage}ãƒ€ãƒ¡ãƒ¼ã‚¸!";
 
         UpdateUI();
 
         yield return new WaitForSeconds(1f);
 
-        if (EnemyHP <= 0f)//‘Ì—Í‚ğí‚èØ‚ê‚½‚ç
+        if (EnemyHP <= 0f)//ä½“åŠ›ã‚’å‰Šã‚Šåˆ‡ã‚ŒãŸã‚‰
         {
 
             Victory();
         }
 
-        else//‚»‚¤‚¶‚á‚È‚©‚Á‚½‚ç
+        else//ãã†ã˜ã‚ƒãªã‹ã£ãŸã‚‰
         {
             StartCoroutine(EnemyTurn());
 
@@ -283,7 +313,7 @@ public class BattleManager : MonoBehaviour
 
 
         isGuarding = true;
-        DialogText.text = "g‚ğç‚Á‚Ä‚¢‚é!";
+        DialogText.text = "èº«ã‚’å®ˆã£ã¦ã„ã‚‹!";
         yield return new WaitForSeconds(1f);
         StartCoroutine(EnemyTurn());
 
@@ -294,18 +324,18 @@ public class BattleManager : MonoBehaviour
 
     private System.Collections.IEnumerator TryEscape()
     {
-        //Random.value‚Í0`1‚ÌŠÔ‚Ì’l‚ğƒ‰ƒ“ƒ_ƒ€‚É•Ô‚µ‚Ä‚­‚ê‚Ü‚·
+        //Random.valueã¯0ï½1ã®é–“ã®å€¤ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«è¿”ã—ã¦ãã‚Œã¾ã™
         bool success = Random.value < 0.5f;
     if(success)
         {
-            DialogText.text = "‚¤‚Ü‚­‚É‚°‚«‚ê‚½";
+            DialogText.text = "ã†ã¾ãã«ã’ãã‚ŒãŸ";
             Invoke(nameof(ReturnToField), 1.2f);
         }
 
         else
         {
 
-            DialogText.text = "‚Ü‚í‚è‚±‚Ü‚ê‚½";
+            DialogText.text = "ã¾ã‚ã‚Šã“ã¾ã‚ŒãŸ";
             isPlayerTurn = false;
             SetMenuState(BattleMenuState.Busy);
             yield return new WaitForSeconds(0.8f);
@@ -319,13 +349,13 @@ public class BattleManager : MonoBehaviour
     {
         isPlayerTurn =false;
         SetMenuState(BattleMenuState.Busy);
-        DialogText.text = "ƒLƒ…ƒA";
+        DialogText.text = "ã‚­ãƒ¥ã‚¢";
         yield return new WaitForSeconds(0.6f);
 
         float heal = Mathf.CeilToInt(PlayerMaxHP * 0.25f) + 2;
         //
         PlayerHP = Mathf.Min(PlayerMaxHP, PlayerHP + heal);
-        DialogText.text = $"{heal}‚©‚¢‚Ó‚­";
+        DialogText.text = $"{heal}ã‹ã„ãµã";
         UpdateUI();
         yield return new WaitForSeconds(0.8f);
         StartCoroutine(EnemyTurn());
@@ -336,7 +366,7 @@ public class BattleManager : MonoBehaviour
     {
         isPlayerTurn = false;
         SetMenuState(BattleMenuState.Busy);
-        DialogText.text = "‚Â‚æ‚­Ø‚è•t‚¯‚½";
+        DialogText.text = "ã¤ã‚ˆãåˆ‡ã‚Šä»˜ã‘ãŸ";
         yield return new WaitForSeconds(0.6f);
 
         var damage =
@@ -344,19 +374,25 @@ public class BattleManager : MonoBehaviour
 
         EnemyHP -= damage;
 
-        DialogText.text = $"{damage}ƒ_ƒ[ƒW!";
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetTrigger("Damage");
+            StartCoroutine(FlashColor(Color.red, 0.2f));
+        }
+
+        DialogText.text = $"{damage}ãƒ€ãƒ¡ãƒ¼ã‚¸!";
 
         UpdateUI();
 
         yield return new WaitForSeconds(0.8f);
 
-        if (EnemyHP <= 0f)//‘Ì—Í‚ğí‚èØ‚ê‚½‚ç
+        if (EnemyHP <= 0f)//ä½“åŠ›ã‚’å‰Šã‚Šåˆ‡ã‚ŒãŸã‚‰
         {
 
             Victory();
         }
 
-        else//‚»‚¤‚¶‚á‚È‚©‚Á‚½‚ç
+        else//ãã†ã˜ã‚ƒãªã‹ã£ãŸã‚‰
         {
             StartCoroutine(EnemyTurn());
 
@@ -401,7 +437,7 @@ public class BattleManager : MonoBehaviour
 
 
     /// <summary>
-    /// “G‚ÌVisual‚ğ¶¬‚µ‚Ü‚·
+    /// æ•µã®Visualã‚’ç”Ÿæˆã—ã¾ã™
     /// </summary>
     private void SpawnEnemyModel()
     {
@@ -440,11 +476,11 @@ public class BattleManager : MonoBehaviour
         enemyModelInstance.transform.localScale =
             currentEnemy.ModelScale;
 
-
+        enemyAnimator = enemyModelInstance.GetComponentInChildren<Animator>();
     }
 
     /// <summary>
-    /// AttackButton‚Ìİ’è
+    /// AttackButtonã®è¨­å®š
     /// </summary>
     public void OnAttackButton()
     {
@@ -464,7 +500,7 @@ public class BattleManager : MonoBehaviour
     {
         isPlayerTurn = false;
 
-        DialogText.text = "ƒvƒŒƒCƒ„[‚ÌUŒ‚!";
+        DialogText.text = "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ”»æ’ƒ!";
 
         yield return new WaitForSeconds(1f);
 
@@ -473,19 +509,25 @@ public class BattleManager : MonoBehaviour
 
         EnemyHP -= damage;
 
-        DialogText.text = $"{damage}ƒ_ƒ[ƒW!";
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetTrigger("Damage");
+            StartCoroutine(FlashColor(Color.red, 0.2f));
+        }
+
+        DialogText.text = $"{damage}ãƒ€ãƒ¡ãƒ¼ã‚¸!";
 
         UpdateUI();
 
         yield return new WaitForSeconds(1f);
 
-        if (EnemyHP <= 0f)//‘Ì—Í‚ğí‚èØ‚ê‚½‚ç
+        if (EnemyHP <= 0f)//ä½“åŠ›ã‚’å‰Šã‚Šåˆ‡ã‚ŒãŸã‚‰
         {
 
             Victory();
         }
 
-        else//‚»‚¤‚¶‚á‚È‚©‚Á‚½‚ç
+        else//ãã†ã˜ã‚ƒãªã‹ã£ãŸã‚‰
         {
             StartCoroutine(EnemyTurn());
 
@@ -495,7 +537,13 @@ public class BattleManager : MonoBehaviour
 
     private System.Collections.IEnumerator EnemyTurn()
     {
-        DialogText.text = $"{currentEnemy.DisplayName}‚ÌUŒ‚!";
+        DialogText.text = $"{currentEnemy.DisplayName}ã®æ”»æ’ƒ!";
+
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetTrigger("Attack");
+        }
+
         yield return new WaitForSeconds(1f);
 
         var damage =
@@ -514,7 +562,7 @@ public class BattleManager : MonoBehaviour
 
 
 
-        DialogText.text = $"{damage}ƒ_ƒ[ƒW!";
+        DialogText.text = $"{damage}ãƒ€ãƒ¡ãƒ¼ã‚¸!";
 
         UpdateUI();
 
@@ -522,7 +570,7 @@ public class BattleManager : MonoBehaviour
 
         if (PlayerHP <= 0f)
         {
-            GameOver(); //”s–k
+            GameOver(); //æ•—åŒ—
 
         }
 
@@ -532,7 +580,7 @@ public class BattleManager : MonoBehaviour
         {
             isPlayerTurn = true;
             SetMenuState(BattleMenuState.Root);
-            DialogText.text = "‚Ç‚¤‚·‚é";
+            DialogText.text = "ã©ã†ã™ã‚‹";
 
         }
     }
@@ -557,13 +605,57 @@ public class BattleManager : MonoBehaviour
 
     private void Victory()
     {
-        DialogText.text = "Ÿ—˜";
+        DialogText.text = "å‹åˆ©";
+
+
+        int exp = 0;
+        if(currentEnemy !!=null)
+        {
+
+            exp = currentEnemy.ExReward;
+
+        }
+
+       
+
+        int levelUps = 0;
+
+        if (LevelSystem != null)
+        {
+            levelUps = LevelSystem.AddExp(exp);
+        }
+
+        ApplyPlayerStatus();
+        UpdateUI();
+
+        if (levelUps >0)
+        {
+            DialogText.text +=
+                $"\n{exp}EXPã‹ãã¨ã" +
+                $"\nãƒ¬ãƒ™ãƒ«ãŒ{PlayerStatus.Level}ã«ãªã£ãŸ";
+           }
+
+        else
+        {
+            DialogText.text +=
+                $"\n{exp}EXPã‹ãã¨ã";
+
+
+        }
+
+
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetTrigger("Die");
+        }
+
+
         Invoke(nameof(ReturnToField), 2f);
     }
 
     private void GameOver()
     {
-        DialogText.text = "‘S–Å‚µ‚½EEE";
+        DialogText.text = "å…¨æ»…ã—ãŸãƒ»ãƒ»ãƒ»";
         Invoke(nameof(ReturnToField), 2f);
 
     }
@@ -572,6 +664,25 @@ public class BattleManager : MonoBehaviour
     {
         SceneManager.LoadScene("Field_01");
 
+    }
+
+    private System.Collections.IEnumerator FlashColor(Color color, float duration)
+    {
+        if (enemyModelInstance == null) yield break;
+
+        var renderers = enemyModelInstance.GetComponentsInChildren<SkinnedMeshRenderer>();
+        foreach (var r in renderers)
+        {
+            r.material.EnableKeyword("_EMISSION");
+            r.material.SetColor("_EmissionColor", color);
+        }
+
+        yield return new WaitForSeconds(duration);
+
+        foreach (var r in renderers)
+        {
+            r.material.SetColor("_EmissionColor", Color.black);
+        }
     }
 
 }
