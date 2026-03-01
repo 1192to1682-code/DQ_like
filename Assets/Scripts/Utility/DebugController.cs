@@ -46,6 +46,7 @@ public class DebugController : MonoBehaviour
         }
         PlayerStatus.ResetToDefault();
         Refresh();
+        ApplyToBattleIfPossible();
     }
 
     private void SetLevel(int newLevel)
@@ -84,8 +85,21 @@ public class DebugController : MonoBehaviour
         Refresh();
         //Todo:êÌì¨íÜÇ…îΩâfÇµÇΩÇ¢èÍçá
 
+        ApplyToBattleIfPossible();
     }
 
+    private void ApplyToBattleIfPossible()
+    {
+        if (BattleManager ==null) 
+         {
+
+            return;
+        }
+        BattleManager.ApplyPlayerStatus();
+        BattleManager.UpdateUI();
+
+
+    }
 
     private void Refresh()
     {

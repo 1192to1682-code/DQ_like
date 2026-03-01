@@ -79,7 +79,7 @@ public class BattleManager : MonoBehaviour
     }
 
 
-    private void ApplyPlayerStatus()
+    public void ApplyPlayerStatus()
     {
 
         if(PlayerStatus ==null)
@@ -585,7 +585,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void UpdateUI()
+    public void UpdateUI()
     {
         PlayerHPText.text = $"HP:{PlayerHP}/{PlayerMaxHP}";
         if (currentEnemy != null)
