@@ -3,25 +3,27 @@ using UnityEngine;
     fileName= "Enemy_")]
 public class EnemyData :ScriptableObject
 {
-    public int EnemyID;//¯•Ê—p(0,1,2)
-    public string DisplayName;//“G‚Ì•\¦–¼
-    public float MaxHP;//Å‘å‘Ì—Í
-    public float AttackMin;//Å¬UŒ‚—Í
-    public float AttackMax;//Å‘åUŒ‚—Í
+    public int EnemyID;//è­˜åˆ¥ç”¨(0,1,2)
+    public string DisplayName;//æ•µã®è¡¨ç¤ºå
+    public float MaxHP;//æœ€å¤§ä½“åŠ›
+    public float AttackMin;//æœ€å°æ”»æ’ƒåŠ›
+    public float AttackMax;//æœ€å¤§æ”»æ’ƒåŠ›
 
     [Header("battle Visual")]
     public GameObject ModelPrefab;
-    public Vector3 ModelPosition = new Vector3(0, 0, 2f);//ˆÊ’u
+    public Vector3 ModelPosition = new Vector3(0, 0, 2f);//ä½ç½®
     public Vector3 ModelRotation = new Vector3(0, 180f, 0);//
     public Vector3 ModelScale = Vector3.one;
 
+    public Vector3 UIOffset = new Vector3(0, 2.5f, 0); // é ­ä¸ŠUIã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+
     [Header("Reward")]
-    public int ExpReward = 5;//ŒoŒ±’l
+    public int ExpReward = 5;//çµŒé¨“å€¤
 
 
 
     [TextArea(2, 4)]
-    public string Description;//“G‚É‚Â‚¢‚Ä‚Ìà–¾
+    public string Description;//æ•µã«ã¤ã„ã¦ã®èª¬æ˜
 
 
    

@@ -4,17 +4,24 @@ using UnityEngine;
     fileName= "PlayerStatus_")]
 public class PlayerStatus : ScriptableObject
 {
-    [Header("ƒvƒŒƒCƒ„[‚Ìó‘Ô")]
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çŠ¶æ…‹")]
     public int Level = 1;
     public int Exp = 0;
 
-    [Header("ƒvƒŒƒCƒ„[‚ÌƒXƒe[ƒ^ƒX")]
+    [Header("ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹")]
     public float MaxHP = 30;
+    public float MaxMP = 10;
     public float AttackMin = 3;
     public float AttackMax = 6;
+
+    [Header("ãƒãƒˆãƒ«æ™‚ã®è¦‹ãŸç›®")]
+    public GameObject PlayerModelPrefab;
+    public Vector3 BattlePosition;
+    public Vector3 BattleRotation;
+    public Vector3 BattleScale = Vector3.one;
     
     /// <summary>
-    ///ƒvƒŒƒCƒ„[ƒXƒe[ƒ^ƒX‚Ì‰Šú‰» 
+    ///ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®åˆæœŸåŒ– 
     /// </summary>
     public void ResetToDefault()
     {
@@ -22,6 +29,7 @@ public class PlayerStatus : ScriptableObject
         Level = 1;
         Exp = 0;
         MaxHP = 30;
+        MaxMP = 10;
         AttackMin = 3;
         AttackMax = 6;
 

@@ -9,6 +9,7 @@ public class EnemyInstance
     public float CurrentHP;
     public GameObject ModelInstance;
     public Animator Animator;
+    public GameObject UIInstance; // 頭上のUI
 
     public EnemyInstance(EnemyData data)
     {
