@@ -1,31 +1,28 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections;
+using System.Collections.Generic;
 
 public enum BattleMenuState
 {
-
-    Root, //たたかう/さくせん/にげる
-    Fight,//こうげき/じゅもん//とくぎ/防御
-    Busy//演出中(入力不可)
-
+    Root,  // たたかう/さくせん/にげる
+    Fight, // こうげき/じゅもん/とくぎ/ぼうぎょ
+    Busy   // 演出中(入力不可)
 }
 
 public class BattleManager : MonoBehaviour
 {
-    public static int NextEnemyID = 0;
+    public static int[] NextEnemyIDs = new int[] { 0, 1, 2 };
 
     [Header("EnemyData")]
     public EnemyDatabase EnemyDB;
-    private EnemyData currentEnemy;
+    private List<EnemyInstance> enemies = new List<EnemyInstance>();
 
     [Header("Enemy Visual")]
     public Transform EnemyModelRoot;
-    private GameObject enemyModelInstance;
-    private Animator enemyAnimator;
 
-
-    [Header("PlayerStatus とLevelSystemの参照")]
+    [Header("PlayerStatus と LevelSystem の参照")]
     public PlayerStatus PlayerStatus;
     public LevelSystem LevelSystem;
 
@@ -35,16 +32,11 @@ public class BattleManager : MonoBehaviour
     public float PlayerAttackMin = 5;
     public float PlayerAttackMax = 10;
 
-
-    [Header("Enemy HP")]
-    public float EnemyHP;
-
     [Header("UI")]
     public TextMeshProUGUI PlayerHPText;
     public TextMeshProUGUI EnemyNameText;
     public TextMeshProUGUI EnemyHPText;
     public TextMeshProUGUI DialogText;
-
 
     [Header("DQ Like Menu")]
     public GameObject RootmenuPanel;
@@ -55,66 +47,58 @@ public class BattleManager : MonoBehaviour
     public MenuButton MenuButtonPrefab;
 
     private BattleMenuState menuState = BattleMenuState.Root;
-
     private bool isGuarding = false;
-
-
-
     private bool isPlayerTurn = true;
 
     void Start()
     {
-
-        SetupEnemyFromDB();
+        SetupEnemiesFromDB();
         ApplyPlayerStatus();
-
         UpdateUI();
-
         BuildRootMenu();
+        SpawnEnemyModels();
 
-        SpawnEnemyModel();
-
-        DialogText.text = $"{currentEnemy.DisplayName}が現れた!";
-
+        if (enemies.Count > 1)
+        {
+            DialogText.text = "魔物たちが現れた!";
+        }
+        else if (enemies.Count == 1)
+        {
+            DialogText.text = $"{enemies[0].Data.DisplayName}が現れた!";
+        }
     }
-
 
     public void ApplyPlayerStatus()
     {
-
-        if(PlayerStatus ==null)
-        {
-            return;
-
-        }
+        if (PlayerStatus == null) return;
         PlayerMaxHP = PlayerStatus.MaxHP;
-        PlayerHP =Mathf.Min(PlayerHP, PlayerMaxHP);
+        PlayerHP = Mathf.Min(PlayerHP, PlayerMaxHP);
         PlayerAttackMin = PlayerStatus.AttackMin;
         PlayerAttackMax = PlayerStatus.AttackMax;
     }
 
-
-    private void SetupEnemyFromDB()
+    private void SetupEnemiesFromDB()
     {
-
         if (EnemyDB == null)
         {
-
             Debug.LogError("EnemyDBが設定されていません");
             return;
-
         }
 
-        currentEnemy = EnemyDB.GetByID(NextEnemyID);
-
-        if (currentEnemy == null)
+        enemies.Clear();
+        foreach (int id in NextEnemyIDs)
         {
-            Debug.LogError("NextEnemyIDがEnemyDBに見つかりません");
-            return;
-
+            var data = EnemyDB.GetByID(id);
+            if (data != null)
+            {
+                enemies.Add(new EnemyInstance(data));
+            }
         }
 
-        EnemyHP = currentEnemy.MaxHP;
+        if (enemies.Count == 0)
+        {
+            Debug.LogError("有効な敵データが見つかりません");
+        }
     }
 
     private void SetMenuState(BattleMenuState state)
@@ -123,237 +107,204 @@ public class BattleManager : MonoBehaviour
 
         if (RootmenuPanel != null)
         {
-            RootmenuPanel.SetActive(
-                state == BattleMenuState.Root);
-
+            RootmenuPanel.SetActive(state == BattleMenuState.Root);
         }
 
         if (FightMenuPanel != null)
-
         {
-            FightMenuPanel.SetActive(
-                 state == BattleMenuState.Fight);
-
+            FightMenuPanel.SetActive(state == BattleMenuState.Fight);
         }
 
         if (state == BattleMenuState.Busy)
         {
-            if (RootmenuPanel != null)
-            {
-                RootmenuPanel.SetActive(false);
-
-            }
-
-            if (FightMenuPanel != null)
-
-            {
-                FightMenuPanel.SetActive(false);
-
-            }
+            if (RootmenuPanel != null) RootmenuPanel.SetActive(false);
+            if (FightMenuPanel != null) FightMenuPanel.SetActive(false);
         }
     }
 
-
     private void BuildRootMenu()
     {
-
         ClearChildren(RootMenuRoot);
-        CreateButton(RootMenuRoot, "たたかう", () => {
-        
-        if(!isPlayerTurn)
-
-            {
-                return;
-            }
-
-            //たたかうメニューを設定します
-            //Todo:ここにあとで設定用のメソッドを追記する
+        CreateButton(RootMenuRoot, "たたかう", () =>
+        {
+            if (!isPlayerTurn) return;
             BuildFightMenu();
             SetMenuState(BattleMenuState.Fight);
             DialogText.text = "どうする？";
         });
 
-        CreateButton(RootMenuRoot, "さくせん", () =>
+        CreateButton(RootMenuRoot, "アイテム", () =>
         {
-            if(!isPlayerTurn)
+           if (!isPlayerTurn) return;
+           if (!InventryManager.Instance.UseItem("ポーション（回復薬）"))
             {
+                DialogText.text = "ポーションがない";
                 return;
 
             }
-            DialogText.text = "さくせんはまだつかえない!";
+
+            StartCoroutine(ExecuteUseItem());
+
+            
+
 
         });
+
 
         CreateButton(RootMenuRoot, "にげる", () =>
         {
-
-            if (!isPlayerTurn)
-            {
-
-                return;
-            }
-
-            StartCoroutine (TryEscape());
-            //Todo：逃げるを使う
-
+            if (!isPlayerTurn) return;
+            StartCoroutine(TryEscape());
         });
-
     }
 
     private void BuildFightMenu()
     {
-
         ClearChildren(FightMenuRoot);
         CreateButton(FightMenuRoot, "こうげき", () =>
         {
-
-            if (!isPlayerTurn)
-            {
-                return;
-
-            }
-
+            if (!isPlayerTurn) return;
             StartCoroutine(ExecuteAttack());
-
         });
 
-    CreateButton(FightMenuRoot, "じゅもん", () =>
+        CreateButton(FightMenuRoot, "じゅもん", () =>
         {
-
-            if (!isPlayerTurn)
-            {
-                return;
-
-            }
-
+            if (!isPlayerTurn) return;
             StartCoroutine(ExecuteHealSpell());
-
-        });//Todo
+        });
 
         CreateButton(FightMenuRoot, "とくぎ", () =>
         {
-
-            if (!isPlayerTurn)
-            {
-                return;
-
-            }
-
+            if (!isPlayerTurn) return;
             StartCoroutine(ExecutePowerSkill());
-
-        });//Todo
+        });
 
         CreateButton(FightMenuRoot, "ぼうぎょ", () =>
         {
-
-            if (!isPlayerTurn)
-            {
-                return;
-
-            }
-
+            if (!isPlayerTurn) return;
             StartCoroutine(ExecuteGurad());
-
-        });//Todo
+        });
 
         CreateButton(FightMenuRoot, "もどる", () =>
         {
             SetMenuState(BattleMenuState.Root);
             DialogText.text = "どうする";
-                                  
-
         });
-
     }
-
 
     private System.Collections.IEnumerator ExecuteAttack()
     {
         isPlayerTurn = false;
         SetMenuState(BattleMenuState.Busy);
 
+        EnemyInstance target = GetFirstLivingEnemy();
+        if (target == null) yield break;
 
         DialogText.text = "プレイヤーの攻撃!";
         yield return new WaitForSeconds(1f);
 
-        var damage =
-            Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax));
+        var damage = Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax));
+        target.CurrentHP -= damage;
 
-        EnemyHP -= damage;
-
-        if (enemyAnimator != null)
+        if (target.Animator != null)
         {
-            enemyAnimator.SetTrigger("Damage");
-            StartCoroutine(FlashColor(Color.red, 0.2f));
+            target.Animator.SetTrigger("Damage");
+            StartCoroutine(FlashColor(target, Color.red, 0.2f));
         }
 
-        DialogText.text = $"{damage}ダメージ!";
-
+        DialogText.text = $"{target.Data.DisplayName}に{damage}ダメージ!";
         UpdateUI();
-
         yield return new WaitForSeconds(1f);
 
-        if (EnemyHP <= 0f)//体力を削り切れたら
+        if (target.IsDead)
         {
+            DialogText.text = $"{target.Data.DisplayName}を倒した!";
+            if (target.Animator != null) target.Animator.SetTrigger("Die");
+            yield return new WaitForSeconds(1f);
+        }
 
+        if (AreAllEnemiesDead())
+        {
             Victory();
         }
-
-        else//そうじゃなかったら
+        else
         {
             StartCoroutine(EnemyTurn());
-
         }
-
     }
-        private System.Collections.IEnumerator ExecuteGurad()
-        {
+
+    private EnemyInstance GetFirstLivingEnemy()
+    {
+        return enemies.Find(e => !e.IsDead);
+    }
+
+    private bool AreAllEnemiesDead()
+    {
+        return enemies.TrueForAll(e => e.IsDead);
+    }
+
+    private System.Collections.IEnumerator ExecuteGurad()
+    {
         isPlayerTurn = false;
         SetMenuState(BattleMenuState.Busy);
-
-
         isGuarding = true;
         DialogText.text = "身を守っている!";
         yield return new WaitForSeconds(1f);
         StartCoroutine(EnemyTurn());
-
-
-
     }
 
+    private System.Collections.IEnumerator ExecuteUseItem()
+    {
+        isPlayerTurn = false;
+        float heal = InventryManager.Instance.GetItemDate(
+     "ポーション（回復薬）").Power;
+        PlayerHP += heal;
+        if (PlayerHP > PlayerMaxHP)
+        {
+
+            PlayerHP = PlayerMaxHP;
+
+        }
+
+        DialogText.text = $"HPが{heal}回復した";
+        UpdateUI();
+
+        yield return new WaitForSeconds(0.8f);
+
+
+        SetMenuState(BattleMenuState.Busy);
+
+
+
+        StartCoroutine(EnemyTurn());
+    }
 
     private System.Collections.IEnumerator TryEscape()
     {
-        //Random.valueは0～1の間の値をランダムに返してくれます
         bool success = Random.value < 0.5f;
-    if(success)
+        if (success)
         {
             DialogText.text = "うまくにげきれた";
             Invoke(nameof(ReturnToField), 1.2f);
         }
-
         else
         {
-
             DialogText.text = "まわりこまれた";
             isPlayerTurn = false;
             SetMenuState(BattleMenuState.Busy);
             yield return new WaitForSeconds(0.8f);
             StartCoroutine(EnemyTurn());
-
         }
-
     }
 
     private System.Collections.IEnumerator ExecuteHealSpell()
     {
-        isPlayerTurn =false;
+        isPlayerTurn = false;
         SetMenuState(BattleMenuState.Busy);
         DialogText.text = "キュア";
         yield return new WaitForSeconds(0.6f);
 
         float heal = Mathf.CeilToInt(PlayerMaxHP * 0.25f) + 2;
-        //
         PlayerHP = Mathf.Min(PlayerMaxHP, PlayerHP + heal);
         DialogText.text = $"{heal}かいふく";
         UpdateUI();
@@ -361,245 +312,159 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(EnemyTurn());
     }
 
-
     private System.Collections.IEnumerator ExecutePowerSkill()
     {
         isPlayerTurn = false;
         SetMenuState(BattleMenuState.Busy);
+
+        EnemyInstance target = GetFirstLivingEnemy();
+        if (target == null) yield break;
+
         DialogText.text = "つよく切り付けた";
         yield return new WaitForSeconds(0.6f);
 
-        var damage =
-           Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax)*1.6f +2);
+        var damage = Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax) * 1.6f + 2);
+        target.CurrentHP -= damage;
 
-        EnemyHP -= damage;
-
-        if (enemyAnimator != null)
+        if (target.Animator != null)
         {
-            enemyAnimator.SetTrigger("Damage");
-            StartCoroutine(FlashColor(Color.red, 0.2f));
+            target.Animator.SetTrigger("Damage");
+            StartCoroutine(FlashColor(target, Color.red, 0.2f));
         }
 
-        DialogText.text = $"{damage}ダメージ!";
-
+        DialogText.text = $"{target.Data.DisplayName}に{damage}ダメージ!";
         UpdateUI();
-
         yield return new WaitForSeconds(0.8f);
 
-        if (EnemyHP <= 0f)//体力を削り切れたら
+        if (target.IsDead)
         {
+            DialogText.text = $"{target.Data.DisplayName}を倒した!";
+            if (target.Animator != null) target.Animator.SetTrigger("Die");
+            yield return new WaitForSeconds(1f);
+        }
 
+        if (AreAllEnemiesDead())
+        {
             Victory();
         }
-
-        else//そうじゃなかったら
+        else
         {
             StartCoroutine(EnemyTurn());
-
         }
-
-
-
-
     }
 
-    void CreateButton(Transform root, string label,
-        System.Action onClick)
+    void CreateButton(Transform root, string label, System.Action onClick)
     {
-        if (MenuButtonPrefab == null || root == null)
-        {
-            return;
-
-        }
-
+        if (MenuButtonPrefab == null || root == null) return;
         var btn = Instantiate(MenuButtonPrefab, root);
         btn.Setup(label, onClick);
-
     }
 
     void ClearChildren(Transform root)
     {
-        if(root == null)
-        {
-            return;
-
-        }
-
-        for(int i=root.childCount -1;i>=0;i--)
+        if (root == null) return;
+        for (int i = root.childCount - 1; i >= 0; i--)
         {
             Destroy(root.GetChild(i).gameObject);
-
         }
-
     }
 
-
-
-
-    /// <summary>
-    /// 敵のVisualを生成します
-    /// </summary>
-    private void SpawnEnemyModel()
+    private void SpawnEnemyModels()
     {
-        if (EnemyModelRoot == null)
-        {
-            return;
+        if (EnemyModelRoot == null) return;
 
+        foreach (var enemy in enemies)
+        {
+            enemy.DestroyModel();
         }
 
-        if (currentEnemy == null)
+        float spacing = 2.0f;
+        float startX = -(enemies.Count - 1) * spacing * 0.5f;
 
+        for (int i = 0; i < enemies.Count; i++)
         {
-            return;
+            var enemy = enemies[i];
+            if (enemy.Data.ModelPrefab == null) continue;
 
+            GameObject instance = Instantiate(enemy.Data.ModelPrefab, EnemyModelRoot);
+            enemy.ModelInstance = instance;
+
+            Vector3 pos = enemy.Data.ModelPosition;
+            pos.x += startX + (i * spacing);
+            
+            instance.transform.localPosition = pos;
+            instance.transform.localEulerAngles = enemy.Data.ModelRotation;
+            instance.transform.localScale = enemy.Data.ModelScale;
+
+            enemy.Animator = instance.GetComponentInChildren<Animator>();
         }
-
-        if (currentEnemy.ModelPrefab == null)
-
-        {
-            return;
-
-        }
-        if (enemyModelInstance != null)
-        {
-
-            Destroy(enemyModelInstance);
-
-        }
-
-        enemyModelInstance = Instantiate(currentEnemy.ModelPrefab, EnemyModelRoot);
-
-        enemyModelInstance.transform.localPosition =
-            currentEnemy.ModelPosition;
-        enemyModelInstance.transform.localEulerAngles =
-            currentEnemy.ModelRotation;
-        enemyModelInstance.transform.localScale =
-            currentEnemy.ModelScale;
-
-        enemyAnimator = enemyModelInstance.GetComponentInChildren<Animator>();
     }
 
-    /// <summary>
-    /// AttackButtonの設定
-    /// </summary>
     public void OnAttackButton()
     {
-        if (!isPlayerTurn)
-        {
-            return;
-
-        }
-
-
-
-        StartCoroutine(PlayerAttack());
-
-    }
-
-    private System.Collections.IEnumerator PlayerAttack()
-    {
-        isPlayerTurn = false;
-
-        DialogText.text = "プレイヤーの攻撃!";
-
-        yield return new WaitForSeconds(1f);
-
-        var damage =
-            Mathf.Ceil(Random.Range(PlayerAttackMin, PlayerAttackMax));
-
-        EnemyHP -= damage;
-
-        if (enemyAnimator != null)
-        {
-            enemyAnimator.SetTrigger("Damage");
-            StartCoroutine(FlashColor(Color.red, 0.2f));
-        }
-
-        DialogText.text = $"{damage}ダメージ!";
-
-        UpdateUI();
-
-        yield return new WaitForSeconds(1f);
-
-        if (EnemyHP <= 0f)//体力を削り切れたら
-        {
-
-            Victory();
-        }
-
-        else//そうじゃなかったら
-        {
-            StartCoroutine(EnemyTurn());
-
-        }
-
+        if (!isPlayerTurn) return;
+        StartCoroutine(ExecuteAttack());
     }
 
     private System.Collections.IEnumerator EnemyTurn()
     {
-        DialogText.text = $"{currentEnemy.DisplayName}の攻撃!";
-
-        if (enemyAnimator != null)
+        foreach (var enemy in enemies)
         {
-            enemyAnimator.SetTrigger("Attack");
+            if (enemy.IsDead) continue;
+
+            DialogText.text = $"{enemy.Data.DisplayName}の攻撃!";
+            if (enemy.Animator != null)
+            {
+                enemy.Animator.SetTrigger("Attack");
+            }
+
+            yield return new WaitForSeconds(1f);
+
+            var damage = Mathf.Ceil(Random.Range(enemy.Data.AttackMin, enemy.Data.AttackMax));
+            if (isGuarding)
+            {
+                damage = Mathf.Ceil(damage * 0.5f);
+                isGuarding = false;
+            }
+
+            PlayerHP -= damage;
+            DialogText.text = $"{damage}ダメージ!";
+            UpdateUI();
+
+            yield return new WaitForSeconds(1f);
+
+            if (PlayerHP <= 0f)
+            {
+                GameOver();
+                yield break;
+            }
         }
 
-        yield return new WaitForSeconds(1f);
-
-        var damage =
-            Mathf.Ceil(
-                Random.Range(currentEnemy.AttackMin,
-                currentEnemy.AttackMax));
-
-        if(isGuarding)
-        {
-            damage = Mathf.Ceil(damage * 0.5f);
-            isGuarding = false;
-
-        }
-
-        PlayerHP -= damage;
-
-
-
-        DialogText.text = $"{damage}ダメージ!";
-
-        UpdateUI();
-
-        yield return new WaitForSeconds(1f);
-
-        if (PlayerHP <= 0f)
-        {
-            GameOver(); //敗北
-
-        }
-
-
-
-        else
-        {
-            isPlayerTurn = true;
-            SetMenuState(BattleMenuState.Root);
-            DialogText.text = "どうする";
-
-        }
+        isPlayerTurn = true;
+        SetMenuState(BattleMenuState.Root);
+        DialogText.text = "どうする";
     }
 
     public void UpdateUI()
     {
         PlayerHPText.text = $"HP:{PlayerHP}/{PlayerMaxHP}";
-        if (currentEnemy != null)
+        
+        EnemyInstance firstLiving = GetFirstLivingEnemy();
+        if (firstLiving != null)
         {
-            EnemyNameText.text = currentEnemy.DisplayName;
-            EnemyHPText.text = $"HP:{EnemyHP}/{currentEnemy.MaxHP}";
-
+            EnemyNameText.text = firstLiving.Data.DisplayName;
+            EnemyHPText.text = $"HP:{firstLiving.CurrentHP}/{firstLiving.Data.MaxHP}";
+            
+            int livingCount = enemies.FindAll(e => !e.IsDead).Count;
+            if (livingCount > 1)
+            {
+                EnemyNameText.text += $" 他{livingCount - 1}体";
+            }
         }
-
         else
         {
-            EnemyNameText.text = "Enemy";
-            EnemyHPText.text = $"HP:{EnemyHP}";
-
+            EnemyNameText.text = "---";
+            EnemyHPText.text = "HP: 0";
         }
     }
 
@@ -607,48 +472,29 @@ public class BattleManager : MonoBehaviour
     {
         DialogText.text = "勝利";
 
-
-        int exp = 0;
-        if(currentEnemy !!=null)
+        int totalExp = 0;
+        foreach (var enemy in enemies)
         {
-
-            exp = currentEnemy.ExpReward;
-
+            totalExp += enemy.Data.ExpReward;
         }
 
-       
-
         int levelUps = 0;
-
         if (LevelSystem != null)
         {
-            levelUps = LevelSystem.AddExp(exp);
+            levelUps = LevelSystem.AddExp(totalExp);
         }
 
         ApplyPlayerStatus();
         UpdateUI();
 
-        if (levelUps >0)
+        if (levelUps > 0)
         {
-            DialogText.text +=
-                $"\n{exp}EXPかくとく" +
-                $"\nレベルが{PlayerStatus.Level}になった";
-           }
-
+            DialogText.text += $"\n{totalExp}EXPかくとく\nレベルが{PlayerStatus.Level}になった";
+        }
         else
         {
-            DialogText.text +=
-                $"\n{exp}EXPかくとく";
-
-
+            DialogText.text += $"\n{totalExp}EXPかくとく";
         }
-
-
-        if (enemyAnimator != null)
-        {
-            enemyAnimator.SetTrigger("Die");
-        }
-
 
         Invoke(nameof(ReturnToField), 2f);
     }
@@ -657,20 +503,18 @@ public class BattleManager : MonoBehaviour
     {
         DialogText.text = "全滅した・・・";
         Invoke(nameof(ReturnToField), 2f);
-
     }
 
     private void ReturnToField()
     {
         SceneManager.LoadScene("Field_01");
-
     }
 
-    private System.Collections.IEnumerator FlashColor(Color color, float duration)
+    private System.Collections.IEnumerator FlashColor(EnemyInstance enemy, Color color, float duration)
     {
-        if (enemyModelInstance == null) yield break;
+        if (enemy.ModelInstance == null) yield break;
 
-        var renderers = enemyModelInstance.GetComponentsInChildren<SkinnedMeshRenderer>();
+        var renderers = enemy.ModelInstance.GetComponentsInChildren<SkinnedMeshRenderer>();
         foreach (var r in renderers)
         {
             r.material.EnableKeyword("_EMISSION");
@@ -684,5 +528,4 @@ public class BattleManager : MonoBehaviour
             r.material.SetColor("_EmissionColor", Color.black);
         }
     }
-
 }

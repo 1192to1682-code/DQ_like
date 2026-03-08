@@ -88,7 +88,7 @@ public class ChestInteract : MonoBehaviour,IInteractable
         yield return new WaitForSeconds(1f);
         if (InventryManager.Instance != null)
         {
-            InventryManager.Instance.Add(RewardItem);
+            InventryManager.Instance.Add(RewardItem,1);
 
         }
         

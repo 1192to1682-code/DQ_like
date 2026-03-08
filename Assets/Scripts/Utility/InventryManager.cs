@@ -6,37 +6,137 @@ public class InventryManager : MonoBehaviour
     //どこからでも呼べるようにstatic修飾子をつける
     public static InventryManager Instance;
 
-    private List<ItemDate> items = new List<ItemDate>();
+    private List<InventryEntry> items = new List<InventryEntry>();
 
     private void Awake()
     {
-        Instance = this;
-    }
+        //シーンを跨いで使える設定
+        if (Instance == null)
+        {
 
-    public void Add(ItemDate item) {
-        if (item == null)
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        else
+        {
+            Destroy(gameObject);
+
+        }
+    }
+    public void Add(ItemDate item, int amount)
+    {
+        if (item == null || amount <= 0)
         {
 
             return;
-        
+
         }
-        //アイテムデータをインベントリーに追加
-        items.Add(item);
-        Debug.Log($"[インベントリー]アイテム追加:{item.ItemName}");
+
+        var entry = items.Find(
+            x => x.Item == item
+
+            );
+
+        if (entry != null)
+        {
+            entry.Count += amount;
+
+        }
+
+        else
+        {
+
+            items.Add(new InventryEntry
+
+            {
+                Item = item,
+                Count = amount
+            });
+
+            //アイテムデータをインベントリーに追加
+
+            Debug.Log($"[インベントリー]アイテム追加:{item.ItemName}");
+
+        }
 
     }
-
     public bool Has(ItemDate item)
     {
-        return items.Contains(item);
-    
+        var entry = items.Find(
+            x => x.Item == item);
+        return entry != null;
+
     }
 
-    public IReadOnlyList<ItemDate> GetAll()
+    /// <summary>
+    /// アイテムの名称でItemDataを取得する
+    /// </summary>
+    /// <param name="itemName"></param>
+    /// <returns></returns>
+    public ItemDate GetItemDate(string itemName)
+    {
+        var entry = items.Find(
+   x => x.Item. ItemName== itemName) ;
+        return entry.Item;
+
+    }
+
+
+    public IReadOnlyList<InventryEntry > GetAll()
     {
         return items;
 
     }
 
+    /// <summary>
+    ///Itemを使用する 
+    /// </summary>
+    /// <returns></returns>
+    public bool UseItem(ItemDate item)
+    {
+        var entry = items.Find(
+    x => x.Item == item);
+    
+        if(entry ==null || entry.Count <= 0)
+        {
+            return false;
+
+        }
+
+        entry.Count--;
+        return true;
+    }
+
+    public bool UseItem(string itemName)
+    {
+    var entry = items.Find(
+    x => x.Item.ItemName == itemName);
+
+        if (entry == null || entry.Count <= 0)
+        {
+            return false;
+
+        }
+
+        entry.Count--;
+        return true;
+
+    }
+
+
+    public int GetCount(ItemDate item)
+    {
+        var entry = items.Find(
+x => x.Item == item);
+        if(entry ==null)
+        {
+
+            return 0;
+        }
+
+        return entry.Count;
+
+    }
 
 }

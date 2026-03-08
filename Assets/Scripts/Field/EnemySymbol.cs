@@ -9,6 +9,9 @@ public class EnemySymbol : MonoBehaviour
    public float DetectionRange = 10.0f;
    public float StopDistance = 1.5f;
 
+   [Header("Battle Settings")]
+   public int[] EnemyIDs = new int[] { 0 };
+
    private Transform playerTransform;
 
    private void Start()
@@ -61,7 +64,8 @@ public class EnemySymbol : MonoBehaviour
 
         }
 
-        SceneManager. LoadScene(BattleSceneName);
+        BattleManager.NextEnemyIDs = EnemyIDs;
+        SceneManager.LoadScene(BattleSceneName);
         
     }
 }

@@ -1048,7 +1048,6 @@ MonoBehaviour:
   PlayerHP: 30
   PlayerAttackMin: 5
   PlayerAttackMax: 10
-  EnemyHP: 0
   PlayerHPText: {fileID: 913719202}
   EnemyNameText: {fileID: 56237933}
   EnemyHPText: {fileID: 1985043017}
