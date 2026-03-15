@@ -87,10 +87,10 @@ public class BattleManager : MonoBehaviour
     public void ApplyPlayerStatus()
     {
         if (PlayerStatus == null) return;
-        PlayerMaxHP = PlayerStatus.MaxHP;
+        PlayerMaxHP = PlayerState.Instance.MaxHP;
         PlayerHP = Mathf.Min(PlayerHP, PlayerMaxHP);
-        PlayerAttackMin = PlayerStatus.AttackMin;
-        PlayerAttackMax = PlayerStatus.AttackMax;
+        PlayerAttackMin = PlayerState.Instance.AttackMin;
+        PlayerAttackMax = PlayerState.Instance.AttackMax;
         PlayerMaxMP = PlayerStatus.MaxMP;
         PlayerMP = Mathf.Min(PlayerMP, PlayerMaxMP);
     }

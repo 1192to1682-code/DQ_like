@@ -25,9 +25,13 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public Transform CameraTransform;
 
+    public StatusUI StatusUI;
+
     private CharacterController controller;
 
     private Vector3 velocity;
+
+
 
     /// <summary>
     /// Inputsystem‚©‚ç”½‰f‚³‚ê‚½’l
@@ -68,6 +72,23 @@ public class PlayerController : MonoBehaviour
     {
 
         moveInput = value.Get<Vector2>();
+
+    }
+
+    public void OnEquipment(InputValue value)
+    {
+        if(value.isPressed)
+        {
+            if(!StatusUI.gameObject.activeSelf)
+            {
+                StatusUI.Open();
+            }
+            else
+            {
+                StatusUI.Close();
+
+            }
+        }
 
     }
 

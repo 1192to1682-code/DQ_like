@@ -19,6 +19,6 @@ MonoBehaviour:
   AttackMin: 3
   AttackMax: 6
   PlayerModelPrefab: {fileID: 100024, guid: 05b0336cad2ece64b99ce054ed619f4c, type: 3}
-  BattlePosition: {x: 0, y: -2, z: 0}
+  BattlePosition: {x: 0, y: -4, z: 0}
   BattleRotation: {x: 0, y: 0, z: 0}
   BattleScale: {x: 50, y: 50, z: 50}
