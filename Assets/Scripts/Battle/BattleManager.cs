@@ -14,6 +14,16 @@ public enum BattleMenuState
 
 public class BattleManager : MonoBehaviour
 {
+    private void Awake()
+    {
+        // Remove left-over dummy Canvas prefab
+        GameObject rogueCanvas = GameObject.Find("Canvas");
+        if (rogueCanvas != null && rogueCanvas.transform.Find("Status_Root") != null)
+        {
+            Destroy(rogueCanvas);
+        }
+    }
+
     public static int[] NextEnemyIDs = new int[] { 0, 1, 2 };
 
     [Header("EnemyData")]
