@@ -2,14 +2,27 @@ using UnityEngine;
 using UnityEngine.Events;
 public class NPCInteract : MonoBehaviour,IInteractable
 {
+
+    public enum NPCType
+    {
+Incalid =-1,
+NPC,
+Shop
+
+    }
+
+    public NPCType Type=NPCType.NPC;
+
     public DialogDate FirstDialogDate;
     public DialogDate AfterDialogDate;
     public DialogDate HasKeyDialogDate;
 
     /// <summary>
-    /// ŠO‚©‚çƒ†ƒjƒeƒB[‚ÌƒCƒxƒ“ƒgˆ—‚ğ‚·‚é
+    /// ï¿½Oï¿½ï¿½ï¿½çƒ†ï¿½jï¿½eï¿½Bï¿½[ï¿½ÌƒCï¿½xï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public UnityEvent NPCEvent;
+
+    public UnityEvent NPCShopEvent;
 
     public void Interact()
      {
@@ -20,6 +33,14 @@ public class NPCInteract : MonoBehaviour,IInteractable
         
         }
 
+        //å•†äººã ã£ãŸã‚‰ã€ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã¨åŒæ™‚ã«ShopCanvasã‚’è¡¨ç¤ºã™ã‚‹
+if(Type == NPCType.Shop)
+{
+    DialogUI.Instance.Show(FirstDialogDate);
+
+NPCShopEvent.Invoke();
+return;
+}
 
         if (QuestFlag.HasKey)
         {

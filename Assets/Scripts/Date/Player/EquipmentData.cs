@@ -6,17 +6,20 @@ public class EquipmentData : ScriptableObject
    
     public enum EquipmentType
     {
-        Weapon,//•Ší
-        Armor//–h‹ï
+        Weapon,//ï¿½ï¿½ï¿½ï¿½
+        Armor//ï¿½hï¿½ï¿½
 
     }
 
     public string DisplayName;
     public EquipmentType Type;
 
-    [Header("”\—Í•â³")]
+    [Header("è£…å‚™ã®æ€§èƒ½")]
     public float BonusHp;
     public float BonusAttack;
     public float BonusDefence;
+
+[Header("Shopç”¨ã®ãƒ‡ãƒ¼ã‚¿")]
+public int Price;
 
 }

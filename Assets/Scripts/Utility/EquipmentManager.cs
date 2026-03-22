@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
@@ -98,9 +99,15 @@ public class EquipmentManager : MonoBehaviour
         }
 
         return value;
+    } 
+
+    public List<EquipmentData> ownedEquipments = new List<EquipmentData>();
+
+    public void AddEquipment(EquipmentData equipment)
+    {
+        if (equipment != null)
+        {
+            ownedEquipments.Add(equipment);
+        }
     }
-
 }
-
-
-

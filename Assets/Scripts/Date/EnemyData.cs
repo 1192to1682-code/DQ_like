@@ -19,7 +19,7 @@ public class EnemyData :ScriptableObject
 
     [Header("Reward")]
     public int ExpReward = 5;//経験値
-
+public int GoldReward = 10;//倒したあとにもらえるゴールド
 
 
     [TextArea(2, 4)]

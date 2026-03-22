@@ -5,8 +5,31 @@ public class PlayerState: MonoBehaviour
 
     public static PlayerState Instance;
    
-    [Header("Šî‘bƒXƒe[ƒ^ƒX")]
+    [Header("ï¿½ï¿½bï¿½Xï¿½eï¿½[ï¿½^ï¿½X")]
     public PlayerStatus PlayerStatus;
+
+[Header ("ç¾åœ¨ã®æ‰€æŒé‡‘")]
+public int CurrentGold = 500;
+
+///æ‰€æŒé‡‘ã‚’å¢—ã‚„ã™
+public void AddGold(int amount)
+{
+
+CurrentGold += amount;
+
+}
+
+public bool ConsumeGold(int amount)
+{
+
+if(CurrentGold >=amount)
+{
+CurrentGold -=amount;
+return true;
+}
+return false;
+
+}
 
     private void Awake()
     {

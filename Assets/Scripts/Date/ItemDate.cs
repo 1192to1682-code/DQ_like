@@ -18,9 +18,13 @@ public class ItemDate : ScriptableObject
     [TextArea(2,4)]
     public string Description;
 
-    //”CˆÓ‚Å‚·‚ªAUI‚Åg‚¤ƒAƒCƒRƒ“
+    //ï¿½Cï¿½Ó‚Å‚ï¿½ï¿½ï¿½ï¿½AUIï¿½Ågï¿½ï¿½ï¿½Aï¿½Cï¿½Rï¿½ï¿½
     public Sprite Icon;
 
-    [Header("Œø‰Ê‚Ì’l")]
-    public float Power; //‰ñ•œ—Ê‚È‚Ç
+    [Header("ï¿½ï¿½ï¿½Ê‚Ì’l")]
+    public float Power; //ï¿½ñ•œ—Ê‚È‚ï¿½
+    
+
+    [Header("Shopç”¨ã®ãƒ‡ãƒ¼ã‚¿")]
+    public int Price;
 }

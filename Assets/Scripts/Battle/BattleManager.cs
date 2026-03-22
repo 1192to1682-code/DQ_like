@@ -281,7 +281,7 @@ public class BattleManager : MonoBehaviour
 
         if (AreAllEnemiesDead())
         {
-            Victory();
+           StartCoroutine(Victory());
         }
         else
         {
@@ -404,7 +404,7 @@ public class BattleManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        CheckBattleEnd();
+        StartCoroutine(Victory());
     }
 
     private System.Collections.IEnumerator ExecuteGira()
@@ -443,14 +443,14 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        CheckBattleEnd();
+        StartCoroutine(Victory());
     }
 
     private void CheckBattleEnd()
     {
         if (AreAllEnemiesDead())
         {
-            Victory();
+            StartCoroutine(Victory());
         }
         else
         {
@@ -493,7 +493,7 @@ public class BattleManager : MonoBehaviour
 
         if (AreAllEnemiesDead())
         {
-            Victory();
+            StartCoroutine(Victory());
         }
         else
         {
@@ -670,7 +670,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void Victory()
+    private IEnumerator Victory()
     {
         DialogText.text = "勝利";
 
@@ -697,6 +697,20 @@ public class BattleManager : MonoBehaviour
         {
             DialogText.text += $"\n{totalExp}EXPかくとく";
         }
+
+
+yield return new WaitForSeconds(1f);
+
+int gold =0;
+foreach(var enemy in enemies)
+{
+gold += enemy.Data.GoldReward;
+}
+//データ上のゴールドを増やす
+PlayerState.Instance.AddGold(gold);
+
+DialogText.text =$"{gold}ゴールドを獲得";
+
 
         Invoke(nameof(ReturnToField), 2f);
     }
